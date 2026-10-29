@@ -297,7 +297,7 @@
       const hasDress = !!C.telas.dresscode;
       const hasManual = !!C.telas.manual;
       const hasCountdown = !!C.telas.contagem;
-      const countdownOnMain = !!C.contagemNaPrincipal;
+      const countdownOnMain = true; // contador fixo na pagina principal
       const hasCountdownPage = hasCountdown && !countdownOnMain;
 
       const featureEnabled = {
@@ -442,7 +442,7 @@
         const next = $(id); if(!next) return;
         next.classList.add("active");
         if(id === "mainScreen") next.classList.add("fade-in");
-        if(id === "countdownScreen") requestAnimationFrame(updateCountdownScale);
+        if(id === "mainScreen") requestAnimationFrame(updateCountdownScale);
       }
 
       // ---- MÚSICA (desbloqueio no toque, compatível com iPhone) ----------
@@ -722,7 +722,7 @@
       let selected = areaSelect.value || Object.keys(HOTSPOTS)[0] || "confirm";
 
       function editorScreenFor(key){
-        if(key === "counter") return countdownOnMain ? "mainScreen" : "countdownScreen";
+        if(key === "counter") return "mainScreen";
         if(key === "backCountdown") return "countdownScreen";
         if(key === "pix" || key === "backGift") return "giftScreen";
         if(key === "backDress") return "dressScreen";
@@ -787,7 +787,7 @@
         }
       });
 
-      function openEditor(){ show(editorScreenFor(selected)); document.body.classList.add("editor-on","can-edit"); selectArea(selected); }
+      function openEditor(){ document.body.classList.add("editor-on","can-edit"); selected = "counter"; show("mainScreen"); selectArea("counter"); }
       function closeEditor(){ document.body.classList.remove("editor-on"); }
       $("editOpen").addEventListener("click", openEditor);
       $("closeEditor").addEventListener("click", closeEditor);
@@ -825,7 +825,7 @@
         el.addEventListener("pointerdown", e=>{
           if(!document.body.classList.contains("editor-on")) return;
           e.preventDefault(); e.stopPropagation(); selectArea(key);
-          const stageEl = key === "counter" ? (countdownOnMain ? $("mainStage") : $("countdownStage")) :
+          const stageEl = key === "counter" ? $("mainStage") :
             key === "pix" ? $("giftStage") :
             key === "backGift" ? $("giftStage") :
             key === "backDress" ? $("dressStage") :
