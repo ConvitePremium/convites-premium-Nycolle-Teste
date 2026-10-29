@@ -57,7 +57,7 @@
     .countdown-item{width:100%;min-width:0;text-shadow:0 2px 8px rgba(0,0,0,.48);display:flex;flex-direction:column;align-items:center;justify-content:center}
     .countdown-value{display:block;font-size:var(--count-value-size,34px);font-weight:900;line-height:1;white-space:nowrap}
     .countdown-label{display:block;margin-top:var(--count-label-gap,5px);font-size:var(--count-label-size,11px);font-weight:800;line-height:1.15;letter-spacing:.08em;text-transform:uppercase;color:var(--count-label,#fff);white-space:nowrap}
-    .countdown-message{font-size:clamp(18px,4.4vw,38px);font-weight:900;text-shadow:0 2px 8px rgba(0,0,0,.48)}
+    .countdown-message{grid-column:1/-1;width:100%;max-width:100%;min-width:0;box-sizing:border-box;align-self:center;justify-self:center;padding:0 var(--count-padding,8px);font-size:var(--count-message-size,18px);line-height:1.15;font-weight:900;text-align:center;overflow-wrap:break-word;text-shadow:0 2px 8px rgba(0,0,0,.48)}
     body.editor-on .countdown-box{background:rgba(255,170,40,.22);outline:2px solid rgba(255,255,255,.95);border-radius:10px}
     body.editor-on .countdown-box::before{content:"Contador";position:absolute;left:6px;top:6px;background:#fff;color:#7b3650;border-radius:999px;padding:4px 8px;font-size:12px;font-weight:800;box-shadow:0 2px 8px #0004}
     body.editor-on .countdown-box.selected{background:rgba(50,180,255,.28);outline:3px solid #fff}
@@ -400,6 +400,10 @@
         const labelGap = Math.max(2, Math.min(rect.height * 0.045, 7));
         const padding = Math.max(2, Math.min(rect.height * 0.055, 10));
 
+        // A mensagem final acompanha as dimensões do contador, sem tamanho mínimo fixo.
+        // Usa a largura disponível para manter a frase centralizada no mesmo painel.
+        const messageSize = Math.max(1, Math.min(valueSize * 0.95, rect.width / 10.5, rect.height * 0.48));
+        box.style.setProperty("--count-message-size", messageSize + "px");
         box.style.setProperty("--count-value-size", valueSize + "px");
         box.style.setProperty("--count-label-size", labelSize + "px");
         box.style.setProperty("--count-gap", gap + "px");
@@ -650,12 +654,14 @@
         const box = $("countdownBox");
         if(Number.isNaN(target.getTime())){
           box.innerHTML = '<div class="countdown-message">Confira a data no config.js</div>';
+          updateCountdownScale();
           return;
         }
         const diff = calendarDiff(new Date(), target);
         if(diff.ended){
           box.innerHTML = '<div class="countdown-message"></div>';
           box.querySelector(".countdown-message").textContent = C.contagem.textoFinal || "A festa começou!";
+          updateCountdownScale();
           return;
         }
         const values = {
