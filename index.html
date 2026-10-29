@@ -47,7 +47,6 @@
     #giftScreen{--bg-img:url('assets/presentes.webp')}
     #dressScreen{--bg-img:url('assets/dresscode.webp')}
     #manualScreen{--bg-img:url('assets/manual.webp')}
-    #countdownScreen{--bg-img:url('assets/contagem.webp')}
     #videoScreen{--bg-img:url('assets/principal.webp')}
     #videoPlayer{position:absolute;inset:0;z-index:1;width:100%;height:100%;object-fit:contain;background:#000}
     .hotspot{position:absolute;border:0;background:transparent;cursor:pointer;z-index:5}
@@ -138,7 +137,6 @@
         <button class="hotspot" id="giftBtn" data-key="gift" data-label="Presentes" aria-label="Ver sugestões de presentes"></button>
         <button class="hotspot" id="dressBtn" data-key="dress" data-label="Dress Code" aria-label="Ver dress code"></button>
         <button class="hotspot" id="manualBtn" data-key="manual" data-label="Manual do Convidado" aria-label="Ver manual do convidado"></button>
-        <button class="hotspot" id="countdownBtn" data-key="countdown" data-label="Contagem" aria-label="Ver contagem regressiva"></button>
       </div>
     </section>
 
@@ -163,13 +161,6 @@
         <button class="back" id="manualBackBtn" data-key="backManual" data-label="Voltar — Manual do Convidado">Voltar</button>
       </div>
     </section>
-
-    <section id="countdownScreen" class="screen" aria-label="Contagem regressiva">
-      <div class="stage" id="countdownStage">
-        <img class="art" src="assets/contagem.webp" alt="Contagem regressiva" loading="lazy" width="941" height="1672">
-        <button class="back" id="countdownBackBtn" data-key="backCountdown" data-label="Voltar — Contagem">Voltar</button>
-      </div>
-    </section>
   </main>
   <div class="copy-toast" id="copyToast" role="status" aria-live="polite">Chave PIX copiada!</div>
 
@@ -184,7 +175,7 @@
     </div>
     <div class="editor-mini">Arraste o painel pela barra acima. Arraste a área no convite e puxe a bolinha no canto para aumentar/diminuir. Use <b>?editor=1</b> no link para abrir este editor.</div>
     <div class="editor-row">
-      <select id="areaSelect"><option value="confirm">WhatsApp</option><option value="map">Localização</option><option value="gift">Presentes</option><option value="dress">Dress Code</option><option value="manual">Manual do Convidado</option><option value="countdown">Contagem (botão)</option><option value="counter">Contador (na tela)</option></select>
+      <select id="areaSelect"><option value="confirm">WhatsApp</option><option value="map">Localização</option><option value="gift">Presentes</option><option value="dress">Dress Code</option><option value="manual">Manual do Convidado</option><option value="counter">Contador (na tela)</option></select>
       <label>L <input id="inpL" type="number" step="0.1"></label>
       <label>T <input id="inpT" type="number" step="0.1"></label>
       <label>W <input id="inpW" type="number" step="0.1"></label>
@@ -296,9 +287,9 @@
       const hasPix = hasGift && !!C.pix.ativo;
       const hasDress = !!C.telas.dresscode;
       const hasManual = !!C.telas.manual;
-      const hasCountdown = !!C.telas.contagem;
+      const hasCountdown = true; // Componente permanente da tela principal
       const countdownOnMain = true; // contador fixo na pagina principal
-      const hasCountdownPage = hasCountdown && !countdownOnMain;
+      const hasCountdownPage = false;
 
       const featureEnabled = {
         confirm: hasWhatsapp,
@@ -307,16 +298,16 @@
         pix: hasPix,
         dress: hasDress,
         manual: hasManual,
-        countdown: hasCountdownPage,
+
         counter: hasCountdown,
         backGift: hasGift,
         backDress: hasDress,
         backManual: hasManual,
-        backCountdown: hasCountdownPage
+
       };
 
       // Hotspots (com override opcional do localStorage, para o editor)
-      const STORAGE_KEY = "convite-hotspots-v2:" + location.pathname;
+      const STORAGE_KEY = "convite-hotspots-maincounter-v1:" + location.pathname;
       const $ = (id)=>document.getElementById(id);
       const buttons = {
         confirm: document.getElementById("confirmBtn"),
@@ -325,12 +316,12 @@
         pix: document.getElementById("pixCopyBtn"),
         dress: document.getElementById("dressBtn"),
         manual: document.getElementById("manualBtn"),
-        countdown: document.getElementById("countdownBtn"),
+
         counter: document.getElementById("countdownBox"),
         backGift: document.getElementById("backBtn"),
         backDress: document.getElementById("dressBackBtn"),
-        backManual: document.getElementById("manualBackBtn"),
-        backCountdown: document.getElementById("countdownBackBtn")
+        backManual: document.getElementById("manualBackBtn")
+
       };
       let HOTSPOTS = {};
       Object.entries(C.hotspots || {}).forEach(([key,value])=>{
@@ -341,7 +332,6 @@
       if(hasGift) HOTSPOTS.backGift = JSON.parse(JSON.stringify((C.botoesVoltar.presentes||{}).posicao || {left:3.7,top:1.5,width:20,height:6}));
       if(hasDress) HOTSPOTS.backDress = JSON.parse(JSON.stringify((C.botoesVoltar.dresscode||{}).posicao || {left:3.7,top:1.5,width:20,height:6}));
       if(hasManual) HOTSPOTS.backManual = JSON.parse(JSON.stringify((C.botoesVoltar.manual||{}).posicao || {left:3.7,top:1.5,width:20,height:6}));
-      if(hasCountdownPage) HOTSPOTS.backCountdown = JSON.parse(JSON.stringify((C.botoesVoltar.contagem||{}).posicao || {left:3.7,top:1.5,width:20,height:6}));
 
       // O editor só reaplica posições salvas para recursos que continuam ativos.
       // Assim um botão desativado no config.js nunca reaparece pelo localStorage.
@@ -365,16 +355,16 @@
       if(!hasGift) $("giftScreen")?.remove();
       if(!hasDress) $("dressScreen")?.remove();
       if(!hasManual) $("manualScreen")?.remove();
-      if(!hasCountdownPage) $("countdownScreen")?.remove();
+      
 
       const backTextConfig = {
         backGift: (C.botoesVoltar.presentes||{}).mostrarTexto !== false,
         backDress: (C.botoesVoltar.dresscode||{}).mostrarTexto !== false,
-        backManual: (C.botoesVoltar.manual||{}).mostrarTexto !== false,
-        backCountdown: (C.botoesVoltar.contagem||{}).mostrarTexto !== false
+        backManual: (C.botoesVoltar.manual||{}).mostrarTexto !== false
+
       };
       function applyBackText(){
-        ["backGift","backDress","backManual","backCountdown"].forEach(key=>{
+        ["backGift","backDress","backManual"].forEach(key=>{
           const el=buttons[key]; if(!el) return;
           el.classList.toggle("text-hidden", !backTextConfig[key]);
           el.setAttribute("aria-label", C.textos.voltar);
@@ -424,7 +414,7 @@
         if(hasGift) list.push("giftScreen");
         if(hasDress) list.push("dressScreen");
         if(hasManual) list.push("manualScreen");
-        if(hasCountdownPage) list.push("countdownScreen");
+        
         return list.map($);
       };
       const screens = buildScreens();
@@ -621,15 +611,6 @@
         });
         $("manualBackBtn")?.addEventListener("click", ()=> show("mainScreen"));
       }
-      if(hasCountdownPage && $("countdownBtn")){
-        $("countdownBtn").addEventListener("click", (e)=>{
-          if(document.body.classList.contains("editor-on")) return;
-          e.preventDefault(); e.stopPropagation();
-          show("countdownScreen");
-          updateCountdown();
-        });
-        $("countdownBackBtn")?.addEventListener("click", ()=> show("mainScreen"));
-      }
       musicUnlock.addEventListener("click", async()=>{
         document.body.classList.remove("need-music");
         const ok = await startMusic(true);
@@ -701,12 +682,12 @@
         pix:"PIX (copiar chave)",
         dress:"Dress Code",
         manual:"Manual do Convidado",
-        countdown:"Contagem (botão)",
+
         counter:"Contador (na página principal)",
         backGift:"Voltar — Presentes",
         backDress:"Voltar — Dress Code",
-        backManual:"Voltar — Manual do Convidado",
-        backCountdown:"Voltar — Contagem"
+        backManual:"Voltar — Manual do Convidado"
+
       };
       const areaSelect = $("areaSelect");
       areaSelect.innerHTML = "";
@@ -723,7 +704,7 @@
 
       function editorScreenFor(key){
         if(key === "counter") return "mainScreen";
-        if(key === "backCountdown") return "countdownScreen";
+        
         if(key === "pix" || key === "backGift") return "giftScreen";
         if(key === "backDress") return "dressScreen";
         if(key === "backManual") return "manualScreen";
@@ -830,7 +811,7 @@
             key === "backGift" ? $("giftStage") :
             key === "backDress" ? $("dressStage") :
             key === "backManual" ? $("manualStage") :
-            key === "backCountdown" ? $("countdownStage") : $("mainStage");
+            $("mainStage");
           const stage = stageEl.getBoundingClientRect();
           const start = Object.assign({x:e.clientX, y:e.clientY}, HOTSPOTS[key]);
           const resize = e.target.classList.contains("resize");
@@ -866,7 +847,6 @@
       if(hasGift) HOTSPOTS.backGift = JSON.parse(JSON.stringify((C.botoesVoltar.presentes||{}).posicao || {left:3.7,top:1.5,width:20,height:6}));
       if(hasDress) HOTSPOTS.backDress = JSON.parse(JSON.stringify((C.botoesVoltar.dresscode||{}).posicao || {left:3.7,top:1.5,width:20,height:6}));
       if(hasManual) HOTSPOTS.backManual = JSON.parse(JSON.stringify((C.botoesVoltar.manual||{}).posicao || {left:3.7,top:1.5,width:20,height:6}));
-      if(hasCountdownPage) HOTSPOTS.backCountdown = JSON.parse(JSON.stringify((C.botoesVoltar.contagem||{}).posicao || {left:3.7,top:1.5,width:20,height:6}));
         localStorage.removeItem(STORAGE_KEY);
         applyHotspots(); fillInputs();
       });
@@ -882,7 +862,6 @@
           (hasGift ? "    presentes: { mostrarTexto:"+backTextConfig.backGift+", posicao: "+JSON.stringify(HOTSPOTS.backGift)+" },\n" : "") +
           (hasDress ? "    dresscode: { mostrarTexto:"+backTextConfig.backDress+", posicao: "+JSON.stringify(HOTSPOTS.backDress)+" },\n" : "") +
           (hasManual ? "    manual: { mostrarTexto:"+backTextConfig.backManual+", posicao: "+JSON.stringify(HOTSPOTS.backManual)+" },\n" : "") +
-          (hasCountdownPage ? "    contagem: { mostrarTexto:"+backTextConfig.backCountdown+", posicao: "+JSON.stringify(HOTSPOTS.backCountdown)+" }\n" : "") +
           "  },";
         const pixCode = hasPix && HOTSPOTS.pix ?
           "\n\npix: {\n" +

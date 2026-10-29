@@ -50,12 +50,10 @@ window.CONFIG = {
     localizacao: true,
     presentes: true,
     dresscode: true,
-    manual: true,
-    contagem: true
+    manual: true
   },
 
-  // Mostra o contador na página principal, sem aba própria de contagem.
-  contagemNaPrincipal: true,
+  // O contador é um componente fixo da página principal.
 
   // ----- PIX OPCIONAL (SUGESTÕES DE PRESENTES) ---------------------------
   // ativo: true  -> cria uma área clicável na tela de presentes.

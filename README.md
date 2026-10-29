@@ -1,94 +1,9 @@
-# Engine V4 Modular — Convite Premium
+# Engine Nycolle Teste — Contador na página principal
 
-Esta versão mantém a correção de áudio para iPhone/Safari e permite ativar ou desativar cada recurso pelo `config.js`.
+Esta engine **não possui tela nem imagem `contagem.webp`**. O contador é um componente independente sobre `assets/principal.webp`, editável com `?editor=1`.
 
-## Recursos modulares
+No editor, selecione **Contador (na página principal)**, arraste e redimensione pela alça no canto. Salve neste navegador para testar e use **Copiar código** para persistir em `config.js`.
 
-```js
-telas: {
-  video: true,
-  whatsapp: true,
-  localizacao: true,
-  presentes: true,
-  dresscode: true,
-  contagem: true
-}
-```
+Edite a data e as cores em `config.js` no objeto `contagem`. A opção `telas.contagem` não existe nesta versão.
 
-Use `false` para remover um recurso. A Engine remove automaticamente:
-
-- a área clicável invisível;
-- a tela relacionada;
-- a opção correspondente do editor;
-- qualquer posição antiga salva no navegador para aquele recurso.
-
-Exemplo de convite somente com localização e contagem:
-
-```js
-telas: {
-  video: true,
-  whatsapp: false,
-  localizacao: true,
-  presentes: false,
-  dresscode: false,
-  contagem: true
-}
-```
-
-## Arquivos de arte
-
-- `assets/opening.webp`
-- `assets/principal.webp`
-- `assets/presentes.webp`, quando Presentes estiver ativo
-- `assets/dresscode.webp`, quando Dress Code estiver ativo
-- `assets/contagem.webp`, quando Contagem estiver ativa
-- `assets/video.mp4`, quando Vídeo estiver ativo
-- `assets/musica.mp3`
-- `assets/preview-whatsapp.jpg`
-
-## Editor
-
-Abra o convite com `?editor=1` no final do endereço. O editor mostra somente os recursos ligados no `config.js`.
-
-Na tela de contagem existem duas áreas editáveis:
-
-- `Contagem (botão)`: hotspot da tela principal;
-- `Contador (na tela)`: posição e tamanho do contador sobre `contagem.webp`.
-
-## Música no iPhone
-
-A V4 preserva o desbloqueio de áudio da V3. Caso o Safari bloqueie o MP3, aparece o botão **Ativar música** sem reiniciar o convite.
-
-## Botões de voltar móveis
-No editor `?editor=1`, selecione **Voltar — Presentes**, **Voltar — Dress Code** ou **Voltar — Contagem** para mover e redimensionar cada área.
-A opção **Mostrar texto “Voltar”** pode ser desmarcada. O texto e o visual do botão somem, mas a área continua clicável sobre a arte.
-
-
-## Manual do Convidado
-
-Para usar esta tela, coloque sua arte em `assets/manual.webp` e deixe `manual: true` dentro de `telas` no `config.js`. A área do botão e o botão Voltar podem ser ajustados em `?editor=1`.
-
-## Ajustes da contagem regressiva
-
-- O botão da contagem usa o hotspot `countdown`.
-- A Engine também aceita `contagem` por compatibilidade.
-- A cor dos números é alterada em `contagem.corNumero` no `config.js`.
-- A cor das legendas é alterada em `contagem.corLegenda`.
-- O contador redimensiona números, legendas e espaçamentos proporcionalmente ao bloco, evitando sobreposição.
-
-
-## Contagem regressiva na página principal
-
-Nesta versão, `telas.contagem: true` e `contagemNaPrincipal: true` ativam o contador na página principal sem criar uma aba de contagem. O contador é ajustável pelo editor `?editor=1` na opção **Contador (na página principal)**. Copie as posições geradas para `contagem.posicao` no `config.js`.
-
-**Atenção:** `contagem.dataEvento` continua com a data antiga `2026-08-29T18:30:00`; atualize para a data real do novo evento antes de publicar.
-
-
-## Repositorio Nycolle Teste
-
-Repositorio: `ConvitePremium/convites-premium-Nycolle-Teste`
-GitHub Pages: `https://convitepremium.github.io/convites-premium-Nycolle-Teste/` (apos ativar Pages).
-
-A contagem regressiva esta na pagina principal. Ajuste a posicao em `?editor=1`.
-
-ATENCAO: configure `whatsapp.numero`, `mapa` e `contagem.dataEvento` no config.js antes de testar os respectivos botoes. Foram removidos os contatos e endereco da cliente usada como base. Substitua as artes da pasta assets para a Nycolle.
+Para publicar, remova todos os arquivos antigos do repositório antes de enviar o conteúdo completo deste ZIP. Aguarde o GitHub Pages publicar e atualize com Ctrl+Shift+R.
